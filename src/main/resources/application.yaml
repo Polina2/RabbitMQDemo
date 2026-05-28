@@ -1,0 +1,5 @@
+app:
+  rabbitmq:
+    exchange: directExchange
+    queue: queue
+    routingKey: directRoutingKey
