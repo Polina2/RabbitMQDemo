@@ -5,6 +5,7 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -12,8 +13,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfiguration {
-    @Value("${app.rabbitmq.queue}")
-    private String queueName;
+    @Value("${app.rabbitmq.queue1}")
+    private String queueName1;
+
+    @Value("${app.rabbitmq.queue2}")
+    private String queueName2;
 
     @Value("${app.rabbitmq.directExchange}")
     private String directExchangeName;
@@ -24,19 +28,29 @@ public class RabbitMQConfiguration {
     }
 
     @Bean
-    public Binding binding(Queue queue, DirectExchange directExchange, @Value("${app.rabbitmq.routingKey}") String routingKey){
-        return BindingBuilder.bind(queue).to(directExchange).with(routingKey);
+    public Binding binding1(Queue queue1, DirectExchange directExchange, @Value("${app.rabbitmq.routingKey1}") String routingKey){
+        return BindingBuilder.bind(queue1).to(directExchange).with(routingKey);
     }
 
     @Bean
-    Queue queue() {
-        return QueueBuilder.durable(queueName).build();
+    public Binding binding2(Queue queue2, DirectExchange directExchange, @Value("${app.rabbitmq.routingKey2}") String routingKey){
+        return BindingBuilder.bind(queue2).to(directExchange).with(routingKey);
     }
 
-//    @Bean
-//    public MessageConverter jsonMessageConverter() {
-//        return new Jackson2JsonMessageConverter();
-//    }
+    @Bean
+    Queue queue1() {
+        return QueueBuilder.durable(queueName1).build();
+    }
+
+    @Bean
+    Queue queue2() {
+        return QueueBuilder.durable(queueName2).build();
+    }
+
+    @Bean
+    public MessageConverter jsonMessageConverter() {
+        return new JacksonJsonMessageConverter();
+    }
 
     @Bean
     public CachingConnectionFactory connectionFactory(){
@@ -47,9 +61,9 @@ public class RabbitMQConfiguration {
     }
 
     @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory){
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter converter){
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
-        //template.setMessageConverter(converter);
+        template.setMessageConverter(converter);
         return template;
     }
 

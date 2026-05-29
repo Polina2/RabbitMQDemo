@@ -1,5 +1,7 @@
 app:
   rabbitmq:
     directExchange: directExchange
-    queue: queue
-    routingKey: directRoutingKey
+    queue1: queue1
+    queue2: queue2
+    routingKey1: info.srv1.spb1
+    routingKey2: fatal.srv2.spb1

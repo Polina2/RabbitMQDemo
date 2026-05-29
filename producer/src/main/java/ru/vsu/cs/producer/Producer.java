@@ -14,10 +14,7 @@ public class Producer {
     @Value("${app.rabbitmq.directExchange}")
     private String directExchange;
 
-    @Value(("${app.rabbitmq.routingKey}"))
-    private String routingKey;
-
-    public void sendDirectMessage(ServerEventDto serverEventDto) {
+    public void sendDirectMessage(ServerEventDto serverEventDto, String routingKey) {
         rabbitTemplate.convertAndSend(directExchange, routingKey, serverEventDto);
     }
 }

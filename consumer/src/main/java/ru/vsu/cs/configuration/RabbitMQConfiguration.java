@@ -7,6 +7,7 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,12 +15,20 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfiguration {
-    @Value("${app.rabbitmq.queue}")
-    private String queueName;
+    @Value("${app.rabbitmq.queue1}")
+    private String queueName1;
+
+    @Value("${app.rabbitmq.queue2}")
+    private String queueName2;
 
     @Bean
-    public Queue queue() {
-        return QueueBuilder.durable(queueName).build();
+    public Queue queue1() {
+        return QueueBuilder.durable(queueName1).build();
+    }
+
+    @Bean
+    public Queue queue2() {
+        return QueueBuilder.durable(queueName2).build();
     }
 
     @Bean
@@ -31,9 +40,14 @@ public class RabbitMQConfiguration {
     }
 
     @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory){
+    public MessageConverter jsonMessageConverter() {
+        return new JacksonJsonMessageConverter();
+    }
+
+    @Bean
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter converter){
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
-        //template.setMessageConverter(converter);
+        template.setMessageConverter(converter);
         return template;
     }
 
