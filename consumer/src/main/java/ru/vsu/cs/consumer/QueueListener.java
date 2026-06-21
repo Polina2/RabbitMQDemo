@@ -1,6 +1,7 @@
 package ru.vsu.cs.consumer;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import ru.vsu.cs.dto.ServerEventDto;
@@ -27,5 +28,12 @@ public class QueueListener {
                 serverEventDto.server(),
                 serverEventDto.location()
         );
+    }
+
+    // Обработчик "мертвых" писем
+    @RabbitListener(queues = "dlq.queue")
+    public void handleDeadLetter(Message message) {
+        System.out.println("Handle dead letter");
+        // Логирование, алерт, ручная обработка
     }
 }

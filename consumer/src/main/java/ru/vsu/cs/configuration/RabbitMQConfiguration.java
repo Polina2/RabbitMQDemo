@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 public class RabbitMQConfiguration {
     @Value("${app.rabbitmq.queue1}")
@@ -29,6 +32,23 @@ public class RabbitMQConfiguration {
     @Bean
     public Queue queue2() {
         return QueueBuilder.durable(queueName2).build();
+    }
+
+    @Bean
+    public Queue mainQueue() {
+        Map<String, Object> args = new HashMap<>();
+        args.put("x-dead-letter-exchange", "dlx.exchange");
+        args.put("x-dead-letter-routing-key", "failed");
+        args.put("x-message-ttl", 60000); // 1 минута
+
+        return QueueBuilder.durable("main.queue")
+                .withArguments(args)
+                .build();
+    }
+
+    @Bean
+    public Queue dlqQueue() {
+        return QueueBuilder.durable("dlq.queue").build();
     }
 
     @Bean

@@ -1,6 +1,9 @@
 app:
   rabbitmq:
     directExchange: directExchange
+    fanoutExchange: fanoutExchange
+    topicExchange: topicExchange
+    headersExchange: headersExchange
     queue1: queue1
     queue2: queue2
     routingKey1: info.srv1.spb1
